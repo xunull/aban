@@ -1,0 +1,28 @@
+extensions:
+  - .java
+  - .js
+  - .html
+  - .css
+  - .json
+  - .yaml
+  - .c
+  - .py
+  - .go
+  - .cpp
+  - .lua
+  - .pl
+  - .php
+
+# 不包含的扩展名
+excludeExtensions:
+  - pyc
+
+# 不包含的文件夹 ,以点开头的都不包含?
+excludeDirs:
+  - .git
+  - node_modules
+  - logs
+  - bower_components
+
+excludeFiles:
+  - .DS_Store
