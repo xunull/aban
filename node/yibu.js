@@ -3,19 +3,19 @@
 //
 //  解决什么时候回调完,
 
-var _=require('lodash');
+var _ = require('lodash');
 
 const EventEmitter = require('events');
 
 var default_options = {
-  type:'counting' // counting,event
+    type: 'counting' // counting,event
 };
 
-function Waiter(name,options) {
+function Waiter(name, options) {
     this.name = name;
     // 是否完成了的标志
     this.hasDone = false;
-    this.options= _.assignIn(default_options||options);
+    this.options = _.assignIn(default_options || options);
 }
 
 /**
@@ -26,8 +26,8 @@ Waiter.prototype.do = function() {
 
 };
 
-Waiter.prototype.done=function(){
-  this.do();
+Waiter.prototype.done = function() {
+    this.do();
 };
 
 /**
@@ -40,6 +40,8 @@ Waiter.prototype.done=function(){
  *
  * 但如果就是使用事件的形式 那么这个跟自定义一个事件有什么区别,特点在哪里
  *
+ * 不能使用 instanceof Number 来判断一个值是不是数字
+ *
  * @param  {[type]}   options  [description]
  * @param  {Function} callback [description]
  * @return {[type]}            [description]
@@ -47,26 +49,48 @@ Waiter.prototype.done=function(){
 Waiter.prototype.waitingFor = function(options, callback) {
     this.waitingOptions = options;
     this.waitingCallback = callback;
-    if (options instanceof Array) {
-        // 事件名数组
+
+    if (isNaN(options)) {
+        // 非数字
         this.waitingType = 'Array';
-    } else if (options instanceof Number) {
-        // 处理次数
+    } else {
+        // 是数字
         this.waitingType = 'Number';
+        if( options === 0) {
+            this.someDone();
+        }
     }
+
+    // if (options instanceof Array) {
+    //     // 事件名数组
+    //     this.waitingType = 'Array';
+    // } else if (options instanceof Number) {
+    //     // 处理次数
+    //     this.waitingType = 'Number';
+    // } else if (options === 0) {
+    //     this.waitingType = 'Number';
+    //     this.someDone();
+    // }
 };
+
+var temp = 0;
 
 /**
  * 参数可以传递名字，表示某事件处理完了，如果没有参数,表示完成了一次
+ *
+ * 要想等待方法能够被调用,次数需要被完全的消费掉,否则回调永远不会被调用了
  *
  * @param  {[type]} name [description]
  * @return {[type]}      [description]
  */
 Waiter.prototype.someDone = function(name) {
+
     if (this.hasDone) {
         // 已经处理完的不在给予处理
+        console.log('hasDone');
         return;
     }
+
     switch (this.waitingType) {
         case 'Array':
             let index = this.waitingOptions.indexOf(name);
@@ -78,11 +102,19 @@ Waiter.prototype.someDone = function(name) {
             }
             break;
         case 'Number':
-            this.waitingOptions--;
+
             if (this.waitingOptions === 0) {
                 this.hasDone = true;
                 this.waitingCallback();
+            } else {
+                this.waitingOptions--;
+
+                if (this.waitingOptions === 0) {
+                    this.hasDone = true;
+                    this.waitingCallback();
+                }
             }
+
             break;
         default:
     }
