@@ -26,10 +26,6 @@ var file_analysis=require('./file_analysis');
 //   } else {
 //     file_analysis.countNum(stdout.replace('\n',''));
 //   }
-//
+
 // });
 
-
-// file_analysis.countNumSync('/Users/cuiqikun/xunull/Github/xunull/yuwang');
-
-file_analysis.countNum('/Users/cuiqikun/xunull/Github/xunull/yuwang');
